@@ -1,0 +1,67 @@
+<html>
+<script src="js/raphael.2.1.0.min.js"></script>
+<script src="js/justgage.1.0.1.min.js"></script>
+<style>
+  body {text-align: center;}
+  
+  #gauge {
+    width:800px; height:600px;
+    display: inline-block;
+    margin: 1em;
+  }
+</style>
+
+<div id="output" style="font-family: arial; font-size: 12px; color: blue"></div>
+<div id="gauge"></div>
+
+<script type="text/javascript">
+    // Criação do objeto de conexão WebSocket com o Servidor
+    var connection = new WebSocket("ws://localhost:8080/WebSocket-Server/ws");
+    var countMsg   = 0;
+    
+    if (window.WebSocket) {
+        //alert("ok!");
+     } else {
+        alert("NOT ok!");
+     }
+
+    var tps = 0;
+    var g = new JustGage({
+        id: "gauge", 
+        value: tps, 
+        min: 0,
+        max: 1000,
+        title: "Transacoes",
+        shadowOpacity: 1,
+        shadowSize: 0,
+        shadowVerticalOffset: 10
+    }); 
+    
+    // Método que recebe o retorno quando a conexão está aberta
+    connection.onopen = function () {
+        // Envia mensagens para o servidor via conexão WebSocket
+        //connection.send('Hello, WebSocket Server!!');
+    };
+    
+    // Método que recebe o retorno em caso de erro na conexão
+    connection.onerror = function (error) {
+        // Registra o erro ocorrido
+        writeOut("Error: " + e.data);
+    };
+    
+    // Método que recebe a mensagem enviada pelo Servidor WebSocket
+    connection.onmessage = function (e) {
+        // Registra informação recebida do servidor via conexão WebSocket
+        tps = e.data;
+        g.refresh(tps);
+    };
+    
+    // Método auxiliar para registro das informações na página
+    function writeOut(info) {
+        var date = new Date();
+        var tmp  = date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds(); 
+        var obj  = document.getElementById("output");
+        obj.innerHTML = obj.innerHTML + "<br>" + (++countMsg) + ' - Received [' + tmp + ']: ' + info;
+    }
+</script>
+</html>

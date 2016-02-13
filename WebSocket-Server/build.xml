@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<project name="WebSocketServer" default="install-app">
+	
+	<property name="app" value="WebSocket-Server"/>
+	<property name="warfile" value="/Users/ualter/Temp/${app}.war"/>
+	<property name="antlib.glassfish.home" value="/Users/ualter/Developer/glassfish3/glassfish/lib/ant"/>
+	
+	<taskdef name="glassfish-deploy" classname="org.glassfish.ant.tasks.DeployTask">
+		<classpath path="${antlib.glassfish}/ant-tasks.jar"/>
+	</taskdef>
+	<taskdef name="glassfish-undeploy" classname="org.glassfish.ant.tasks.UndeployTask">
+		<classpath path="${antlib.glassfish}/ant-tasks.jar"/>
+	</taskdef>
+	
+	<target name="install-app" depends="war,undeploy,deploy" />
+	
+	<target name="war">
+		<war destfile="${warfile}" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent"/>
+			<lib dir="WebContent/WEB-INF/lib"/>
+			<classes dir="build/classes"/>
+		</war>
+	</target>
+	
+	<target name="deploy">
+		<glassfish-deploy file="${warfile}"  installdir="/Users/ualter/Developer/glassfish3/" force="yes"/>
+	</target>
+			
+	<target name="undeploy">
+		<glassfish-undeploy name="${app}" installdir="/Users/ualter/Developer/glassfish3/"/>
+	</target>
+</project>	
